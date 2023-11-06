@@ -32,13 +32,16 @@ class RawgClient {
     this.endpoint = endpoint;
     this.client = axios.create({
       baseURL: endpoint,
+      params: {
+        key: rawgApiKey,
+      },
     });
   }
 
   getGames(queryParam: string) {
     const controller = new AbortController();
     const request = this.client.get<{ results: GameInfo[] }>(
-      `/games?${queryParam}&key=${rawgApiKey}`,
+      `/games?${queryParam}`,
       {
         signal: controller.signal,
       }
@@ -49,7 +52,7 @@ class RawgClient {
   getGenres(queryParam: string) {
     const controller = new AbortController();
     const request = this.client.get<{ results: GenreInfo[] }>(
-      `/genres?${queryParam}&key=${rawgApiKey}`,
+      `/genres?${queryParam}`,
       {
         signal: controller.signal,
       }
@@ -60,7 +63,7 @@ class RawgClient {
   getPlatforms(queryParam: string) {
     const controller = new AbortController();
     const request = this.client.get<{ results: PlatformInfo[] }>(
-      `/platforms?${queryParam}&key=${rawgApiKey}`,
+      `/platforms?${queryParam}`,
       {
         signal: controller.signal,
       }

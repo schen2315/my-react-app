@@ -1,14 +1,16 @@
 import {
   ChakraProvider,
   ColorModeScript,
+  Grid,
+  GridItem,
   Flex,
   ListItem,
   SimpleGrid,
   Stack,
   UnorderedList,
+  Show,
 } from "@chakra-ui/react";
 import Navigation from "./components/Rawg/Navigation/Navigation";
-import theme from "./components/Rawg/Theme";
 import useGames from "./hooks/Rawg/useGames";
 import rawgClient, { GameInfo, GenreInfo } from "./services/rawg-client";
 import { CanceledError } from "axios";
@@ -137,54 +139,107 @@ function App() {
 
   return (
     <>
-      <ColorModeScript initialColorMode={theme.initialColorMode} />
-      <ChakraProvider>
-        <Navigation onSubmit={searchGames}></Navigation>
-        <Flex>
-          {genres && (
-            <Sidebar
-              heading={"Genres"}
-              items={genres.map((genre) => genre.name).sort()}
-              onClick={setGenreFilter}
-            />
-          )}
-          <Stack direction={"column"} align={"stretch"} spacing={4} flex="1">
-            <Stack direction="row">
-              <FilterDropDown
-                placeholder="Filter By Platform"
-                options={platforms.map((platform) => platform.name)}
-                onSelect={(platform: string) => setPlatformFilter(platform)}
-              ></FilterDropDown>
-              <FilterDropDown
-                placeholder="Sort By"
-                options={[
-                  "Date added",
-                  "Name",
-                  "Release date",
-                  "Popularity",
-                  "Genre",
-                  "Average Rating",
-                ]}
-                onSelect={(sortByOption: string) =>
-                  setSortByFilter(sortByOption)
-                }
-              ></FilterDropDown>
-            </Stack>
-            <SimpleGrid
-              spacing={4}
-              templateColumns="repeat(auto-fill, minmax(300px, 1fr))"
-            >
-              {loading &&
-                [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <GameCard key={n} />)}
-              {!loading &&
-                sortBy(
-                  filterByGenre(filterByPlatform(games)),
-                  sortByFilter
-                ).map((game) => <GameCard key={game.id} game={game} />)}
-            </SimpleGrid>
+      <Grid
+        templateAreas={{
+          base: `"nav" "main"`,
+          lg: `"nav nav" 
+              "aside main"`,
+        }}
+      >
+        <GridItem pl="2" area={"nav"}>
+          <Navigation onSubmit={searchGames} />
+        </GridItem>
+        <Show above="lg">
+          <GridItem pl="2" area={"aside"}>
+            {genres && (
+              <Sidebar
+                heading={"Genres"}
+                items={genres.map((genre) => genre.name).sort()}
+                onClick={setGenreFilter}
+              />
+            )}
+          </GridItem>
+        </Show>
+        <GridItem pl="2" area={"main"}>
+          <Stack direction="row">
+            <FilterDropDown
+              placeholder="Filter By Platform"
+              options={platforms.map((platform) => platform.name)}
+              onSelect={(platform: string) => setPlatformFilter(platform)}
+            ></FilterDropDown>
+            <FilterDropDown
+              placeholder="Sort By"
+              options={[
+                "Date added",
+                "Name",
+                "Release date",
+                "Popularity",
+                "Genre",
+                "Average Rating",
+              ]}
+              onSelect={(sortByOption: string) => setSortByFilter(sortByOption)}
+            ></FilterDropDown>
           </Stack>
-        </Flex>
-      </ChakraProvider>
+          <SimpleGrid
+            spacing={4}
+            templateColumns="repeat(auto-fill, minmax(300px, 1fr))"
+          >
+            {loading &&
+              [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <GameCard key={n} />)}
+            {!loading &&
+              sortBy(filterByGenre(filterByPlatform(games)), sortByFilter).map(
+                (game) => <GameCard key={game.id} game={game} />
+              )}
+          </SimpleGrid>
+        </GridItem>
+      </Grid>
+      <p>
+        {/* <Navigation onSubmit={searchGames}></Navigation> */}
+        {/* <Flex>
+        {genres && (
+          <Sidebar
+            heading={"Genres"}
+            items={genres.map((genre) => genre.name).sort()}
+            onClick={setGenreFilter}
+          />
+        )}
+        <Stack direction={"column"} align={"stretch"} spacing={4} flex="1">
+          <Stack direction="row">
+            <FilterDropDown
+              placeholder="Filter By Platform"
+              options={platforms.map((platform) => platform.name)}
+              onSelect={(platform: string) => setPlatformFilter(platform)}
+            ></FilterDropDown>
+            <FilterDropDown
+              placeholder="Sort By"
+              options={[
+                "Date added",
+                "Name",
+                "Release date",
+                "Popularity",
+                "Genre",
+                "Average Rating",
+              ]}
+              onSelect={(sortByOption: string) =>
+                setSortByFilter(sortByOption)
+              }
+            ></FilterDropDown>
+          </Stack>
+          <SimpleGrid
+            spacing={4}
+            templateColumns="repeat(auto-fill, minmax(300px, 1fr))"
+          >
+            {loading &&
+              [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <GameCard key={n} />)}
+            {!loading &&
+              sortBy(
+                filterByGenre(filterByPlatform(games)),
+                sortByFilter
+              ).map((game) => <GameCard key={game.id} game={game} />)}
+          </SimpleGrid>
+        </Stack>
+      </Flex> */}
+      </p>
     </>
   );
 }

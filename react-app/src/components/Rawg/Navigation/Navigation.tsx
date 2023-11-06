@@ -10,8 +10,12 @@ import {
   Stack,
   Spacer,
   Center,
+  Image,
+  HStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { FaReact } from "react-icons/fa";
+// import logo from "../../../assets/logo.webp";
 
 interface Props {
   onSubmit: (searchInput: string) => void;
@@ -21,37 +25,33 @@ function Navigation({ onSubmit }: Props) {
   const { colorMode, toggleColorMode } = useColorMode();
   const [searchInput, setSearchInput] = useState("");
   return (
-    <>
-      <Box px={4}>
-        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-          <Heading size="md">RAWG</Heading>
-          <Stack alignItems="center" direction="row" spacing={2}>
-            <Input
-              value={searchInput}
-              placeholder={"Search Games"}
-              onChange={(event) => setSearchInput(event.target.value)}
-            />
-            <Button
-              onClick={() => {
-                onSubmit(searchInput);
-              }}
-            >
-              Submit
-            </Button>
-          </Stack>
-          <Stack alignItems="center" direction="row" spacing={3}>
-            <Text size="sm">
-              {colorMode === "light" ? "Dark Mode" : "Light Mode"}
-            </Text>
-            <Switch
-              id="toggle-mode"
-              isChecked={colorMode === "light" ? false : true}
-              onChange={toggleColorMode}
-            />
-          </Stack>
-        </Flex>
-      </Box>
-    </>
+    <HStack justifyContent={"space-between"} padding="10px">
+      <Image as={FaReact} boxSize="60px" />
+      <Text>Rawg</Text>
+      <Input
+        value={searchInput}
+        placeholder={"Search Games"}
+        onChange={(event) => setSearchInput(event.target.value)}
+      />
+      <Button
+        onClick={() => {
+          onSubmit(searchInput);
+        }}
+      >
+        Submit
+      </Button>
+      <HStack>
+        <Switch
+          colorScheme="green"
+          id="toggle-mode"
+          isChecked={colorMode === "light" ? false : true}
+          onChange={toggleColorMode}
+        />
+        <Text size="sm">
+          {colorMode === "light" ? "Light Mode" : "Dark Mode"}
+        </Text>
+      </HStack>
+    </HStack>
   );
 }
 
