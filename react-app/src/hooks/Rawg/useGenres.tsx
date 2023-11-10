@@ -1,24 +1,26 @@
 import { useEffect, useState } from "react";
 import rawgClient, { GenreInfo } from "../../services/rawg-client";
 import { CanceledError } from "axios";
+import useData from "./useData";
 
-const useGenres = (queryParam: string) => {
-  const [genres, setGenres] = useState<GenreInfo[]>([]);
+const useGenres = () => {
+  const {
+    data: genres,
+    setData: setGenres,
+    loading: genresLoading,
+    setLoading: setGenresLoading,
+    error: genresError,
+    setError: setGenresError,
+  } = useData<GenreInfo>("/genres");
 
-  useEffect(() => {
-    const { request, cancel } = rawgClient.getGenres(queryParam);
-    request
-      .then((res) => {
-        setGenres(res.data.results);
-      })
-      .catch((err) => {
-        if (err instanceof CanceledError) return;
-        console.log(err.message);
-      });
-    return cancel;
-  }, []);
-
-  return { genres, setGenres };
+  return {
+    genres,
+    setGenres,
+    genresLoading,
+    setGenresLoading,
+    genresError,
+    setGenresError,
+  };
 };
 
 export default useGenres;

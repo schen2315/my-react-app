@@ -9,24 +9,12 @@ import {
   Text,
   Highlight,
   Icon,
+  HStack,
 } from "@chakra-ui/react";
 
-import { FaWindows, FaPlaystation, FaXbox, FaApple } from "react-icons/fa";
-import { TbDeviceNintendo } from "react-icons/tb";
-import { AiFillAndroid, AiFillMacCommand } from "react-icons/ai";
-
-const platformToIcon: { [key: string]: any } = {
-  PC: FaWindows,
-  "PlayStation 5": FaPlaystation,
-  "PlayStation 4": FaPlaystation,
-  "PlayStation 3": FaPlaystation,
-  "Xbox One": FaXbox,
-  "Xbox Series S/X": FaXbox,
-  iOS: FaApple,
-  "Nintendo Switch": TbDeviceNintendo,
-  Android: AiFillAndroid,
-  macOS: AiFillMacCommand,
-};
+import PlatformsList from "./PlatformsList";
+import GameCriticScore from "./GameCriticScore";
+import getCroppedImageUrl from "../../../services/image";
 
 interface Props {
   game?: GameInfo;
@@ -34,44 +22,27 @@ interface Props {
 
 function GameCard({ game }: Props) {
   const getPlatforms = (
-    platforms: { platform: { id: number; name: string } }[]
-  ) => platforms.map((platform) => platform.platform.name);
+    platforms: { platform: { id: number; name: string; slug: string } }[]
+  ) => platforms.map((p) => p.platform);
+
   return (
-    <Card maxW="md">
+    <Card>
       <Image
         objectFit="cover"
         maxH={{ base: "100%", sm: "160px" }}
-        src={game ? game.background_image : ""}
+        src={game ? getCroppedImageUrl(game.background_image) : ""}
         alt=""
-        borderTopLeftRadius="lg"
-        borderTopRightRadius="lg"
       />
       <CardHeader>
         {game && (
           <>
-            {getPlatforms(game.platforms).map((platform, index) =>
-              platform in platformToIcon ? (
-                <>
-                  <Icon key={index} as={platformToIcon[platform]} />{" "}
-                </>
-              ) : (
-                <></>
-              )
-            )}
-            <Heading size="md">{game.name}</Heading>
-            <Text fontWeight="bold">
-              {game.metacritic && (
-                <Highlight
-                  query={game.metacritic.toString()}
-                  styles={{ px: "2", py: "1", rounded: "10", bg: "#40C7BF" }}
-                >
-                  {game.metacritic.toString()}
-                </Highlight>
-              )}
-            </Text>
+            <Heading fontSize={20}>{game.name}</Heading>
+            <HStack marginY={1} justifyContent={"space-between"}>
+              <PlatformsList platforms={getPlatforms(game.platforms)} />
+              <GameCriticScore score={game.metacritic} />
+            </HStack>
           </>
         )}
-        {!game && <></>}
       </CardHeader>
       <CardBody></CardBody>
       <CardFooter></CardFooter>

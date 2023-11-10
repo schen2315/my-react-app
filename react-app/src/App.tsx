@@ -1,14 +1,11 @@
 import {
-  ChakraProvider,
-  ColorModeScript,
   Grid,
   GridItem,
-  Flex,
-  ListItem,
   SimpleGrid,
-  Stack,
-  UnorderedList,
   Show,
+  HStack,
+  List,
+  Text,
 } from "@chakra-ui/react";
 import Navigation from "./components/Rawg/Navigation/Navigation";
 import useGames from "./hooks/Rawg/useGames";
@@ -21,29 +18,32 @@ import usePlatforms from "./hooks/Rawg/usePlatforms";
 import { useState } from "react";
 import { number } from "zod";
 import GameCard from "./components/Rawg/GameCard/GameCard";
+import GameCardSkeleton from "./components/Rawg/GameCard/GameCardSkeleton";
+import GameCardContainer from "./components/Rawg/GameCard/GameCardContainer";
+import SidebarSkeleton from "./components/Rawg/Sidebar/SideBarSkeleton";
 
 function App() {
-  const { games, setGames, loading, setLoading, error, setError } =
-    useGames("");
+  const { games, setGames, gamesLoading, setGamesLoading, setGamesError } =
+    useGames();
 
-  const { platforms, setPlatforms } = usePlatforms("");
-  const { genres, setGenres } = useGenres("");
+  const { platforms } = usePlatforms();
+  const { genres, genresLoading } = useGenres();
   const [genreFilter, setGenreFilter] = useState("");
   const [platformFilter, setPlatformFilter] = useState("");
   const [sortByFilter, setSortByFilter] = useState("");
 
   const searchGames = (searchInput: string) => {
     const { request } = rawgClient.getGames(`search=${searchInput}`);
-    setLoading(true);
+    setGamesLoading(true);
     request
       .then((res) => {
         setGames(res.data.results);
-        setLoading(false);
+        setGamesLoading(false);
       })
       .catch((err) => {
         if (err instanceof CanceledError) return;
-        setError(err.message);
-        setLoading(false);
+        setGamesError(err.message);
+        setGamesLoading(false);
       });
   };
 
@@ -62,7 +62,7 @@ function App() {
     if (platformFilter === "") return games;
     const getPlatforms = (
       platforms: { platform: { id: number; name: string } }[]
-    ) => platforms.map((platform) => platform.platform.name);
+    ) => platforms.map(({ platform }) => platform.name);
 
     const getPlatformsForAllGames = (games: GameInfo[]) =>
       games.map((game: GameInfo) => getPlatforms(game.platforms));
@@ -138,109 +138,78 @@ function App() {
   };
 
   return (
-    <>
-      <Grid
-        templateAreas={{
-          base: `"nav" "main"`,
-          lg: `"nav nav" 
-              "aside main"`,
-        }}
-      >
-        <GridItem pl="2" area={"nav"}>
-          <Navigation onSubmit={searchGames} />
+    <Grid
+      templateAreas={{
+        base: `"nav" "filter" "main"`,
+        lg: `"nav nav"
+               "aside filter"
+               "aside main"`,
+      }}
+      templateColumns={{
+        base: "1fr",
+        lg: "300px 1fr",
+      }}
+    >
+      <GridItem area={"nav"}>
+        <Navigation onSubmit={searchGames} />
+      </GridItem>
+      <Show above="lg">
+        <GridItem area={"aside"} paddingX={5}>
+          {!genresLoading && genres && (
+            <Sidebar
+              heading={"Genres"}
+              genres={genres}
+              onClick={setGenreFilter}
+              selectedGenre={genreFilter}
+            />
+          )}
+          {genresLoading && <SidebarSkeleton heading={"Genres"} />}
         </GridItem>
-        <Show above="lg">
-          <GridItem pl="2" area={"aside"}>
-            {genres && (
-              <Sidebar
-                heading={"Genres"}
-                items={genres.map((genre) => genre.name).sort()}
-                onClick={setGenreFilter}
-              />
+      </Show>
+      <GridItem area={"filter"} width={"500px"}>
+        <HStack>
+          <FilterDropDown
+            placeholder="Filter By Platform"
+            options={platforms.map((platform) => platform.name)}
+            onSelect={(platform: string) => setPlatformFilter(platform)}
+          ></FilterDropDown>
+          <FilterDropDown
+            placeholder="Sort By"
+            options={[
+              "Date added",
+              "Name",
+              "Release date",
+              "Popularity",
+              "Genre",
+              "Average Rating",
+            ]}
+            onSelect={(sortByOption: string) => setSortByFilter(sortByOption)}
+          ></FilterDropDown>
+        </HStack>
+      </GridItem>
+      <GridItem area={"main"}>
+        <SimpleGrid
+          spacing={4}
+          padding="10px"
+          columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+        >
+          {gamesLoading &&
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => (
+              <GameCardContainer>
+                <GameCardSkeleton key={n} />
+              </GameCardContainer>
+            ))}
+          {!gamesLoading &&
+            sortBy(filterByGenre(filterByPlatform(games)), sortByFilter).map(
+              (game) => (
+                <GameCardContainer>
+                  <GameCard key={game.id} game={game} />
+                </GameCardContainer>
+              )
             )}
-          </GridItem>
-        </Show>
-        <GridItem pl="2" area={"main"}>
-          <Stack direction="row">
-            <FilterDropDown
-              placeholder="Filter By Platform"
-              options={platforms.map((platform) => platform.name)}
-              onSelect={(platform: string) => setPlatformFilter(platform)}
-            ></FilterDropDown>
-            <FilterDropDown
-              placeholder="Sort By"
-              options={[
-                "Date added",
-                "Name",
-                "Release date",
-                "Popularity",
-                "Genre",
-                "Average Rating",
-              ]}
-              onSelect={(sortByOption: string) => setSortByFilter(sortByOption)}
-            ></FilterDropDown>
-          </Stack>
-          <SimpleGrid
-            spacing={4}
-            templateColumns="repeat(auto-fill, minmax(300px, 1fr))"
-          >
-            {loading &&
-              [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <GameCard key={n} />)}
-            {!loading &&
-              sortBy(filterByGenre(filterByPlatform(games)), sortByFilter).map(
-                (game) => <GameCard key={game.id} game={game} />
-              )}
-          </SimpleGrid>
-        </GridItem>
-      </Grid>
-      <p>
-        {/* <Navigation onSubmit={searchGames}></Navigation> */}
-        {/* <Flex>
-        {genres && (
-          <Sidebar
-            heading={"Genres"}
-            items={genres.map((genre) => genre.name).sort()}
-            onClick={setGenreFilter}
-          />
-        )}
-        <Stack direction={"column"} align={"stretch"} spacing={4} flex="1">
-          <Stack direction="row">
-            <FilterDropDown
-              placeholder="Filter By Platform"
-              options={platforms.map((platform) => platform.name)}
-              onSelect={(platform: string) => setPlatformFilter(platform)}
-            ></FilterDropDown>
-            <FilterDropDown
-              placeholder="Sort By"
-              options={[
-                "Date added",
-                "Name",
-                "Release date",
-                "Popularity",
-                "Genre",
-                "Average Rating",
-              ]}
-              onSelect={(sortByOption: string) =>
-                setSortByFilter(sortByOption)
-              }
-            ></FilterDropDown>
-          </Stack>
-          <SimpleGrid
-            spacing={4}
-            templateColumns="repeat(auto-fill, minmax(300px, 1fr))"
-          >
-            {loading &&
-              [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <GameCard key={n} />)}
-            {!loading &&
-              sortBy(
-                filterByGenre(filterByPlatform(games)),
-                sortByFilter
-              ).map((game) => <GameCard key={game.id} game={game} />)}
-          </SimpleGrid>
-        </Stack>
-      </Flex> */}
-      </p>
-    </>
+        </SimpleGrid>
+      </GridItem>
+    </Grid>
   );
 }
 
