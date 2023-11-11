@@ -4,7 +4,7 @@ import { CanceledError } from "axios";
 
 const useData = <T,>(path: string, queryParams: string = "") => {
   const [data, setData] = useState<T[]>([]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

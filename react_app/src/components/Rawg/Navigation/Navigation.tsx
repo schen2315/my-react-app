@@ -12,8 +12,11 @@ import {
   Center,
   Image,
   HStack,
+  InputGroup,
+  InputLeftElement,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { BsSearch } from "react-icons/bs";
 import { FaReact } from "react-icons/fa";
 // import logo from "../../../assets/logo.webp";
 
@@ -28,11 +31,16 @@ function Navigation({ onSubmit }: Props) {
     <HStack justifyContent={"space-between"} padding="10px">
       <Image as={FaReact} boxSize="60px" />
       <Text>Rawg</Text>
-      <Input
-        value={searchInput}
-        placeholder={"Search Games"}
-        onChange={(event) => setSearchInput(event.target.value)}
-      />
+      <InputGroup>
+        <InputLeftElement children={<BsSearch />} />
+        <Input
+          value={searchInput}
+          placeholder={"Search Games"}
+          borderRadius={20}
+          variant={"filled"}
+          onChange={(event) => setSearchInput(event.target.value)}
+        />
+      </InputGroup>
       <Button
         onClick={() => {
           onSubmit(searchInput);
@@ -47,7 +55,7 @@ function Navigation({ onSubmit }: Props) {
           isChecked={colorMode === "light" ? false : true}
           onChange={toggleColorMode}
         />
-        <Text size="sm">
+        <Text size="sm" whiteSpace="nowrap">
           {colorMode === "light" ? "Light Mode" : "Dark Mode"}
         </Text>
       </HStack>

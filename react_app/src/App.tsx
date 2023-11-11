@@ -21,6 +21,7 @@ import GameCard from "./components/Rawg/GameCard/GameCard";
 import GameCardSkeleton from "./components/Rawg/GameCard/GameCardSkeleton";
 import GameCardContainer from "./components/Rawg/GameCard/GameCardContainer";
 import SidebarSkeleton from "./components/Rawg/Sidebar/SideBarSkeleton";
+import GameGrid from "./components/Rawg/GameGrid/GameGrid";
 
 function App() {
   const { games, setGames, gamesLoading, setGamesLoading, setGamesError } =
@@ -134,6 +135,8 @@ function App() {
       sortByValue in sortByValues
         ? games.sort(sortByValues[sortByValue])
         : games;
+
+    if (sortByValue === "Popularity") sortedGames.reverse();
     return sortedGames;
   };
 
@@ -169,11 +172,13 @@ function App() {
       <GridItem area={"filter"} width={"500px"}>
         <HStack>
           <FilterDropDown
+            selected={platformFilter}
             placeholder="Filter By Platform"
             options={platforms.map((platform) => platform.name)}
             onSelect={(platform: string) => setPlatformFilter(platform)}
           ></FilterDropDown>
           <FilterDropDown
+            selected={sortByFilter}
             placeholder="Sort By"
             options={[
               "Date added",
@@ -188,26 +193,8 @@ function App() {
         </HStack>
       </GridItem>
       <GridItem area={"main"}>
-        <SimpleGrid
-          spacing={4}
-          padding="10px"
-          columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
-        >
-          {gamesLoading &&
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => (
-              <GameCardContainer>
-                <GameCardSkeleton key={n} />
-              </GameCardContainer>
-            ))}
-          {!gamesLoading &&
-            sortBy(filterByGenre(filterByPlatform(games)), sortByFilter).map(
-              (game) => (
-                <GameCardContainer>
-                  <GameCard key={game.id} game={game} />
-                </GameCardContainer>
-              )
-            )}
-        </SimpleGrid>
+        {gamesLoading && <GameGrid games={[]}></GameGrid>}
+        {!gamesLoading && <GameGrid games={games}></GameGrid>}
       </GridItem>
     </Grid>
   );

@@ -23,7 +23,7 @@ interface Props {
 function GameCard({ game }: Props) {
   const getPlatforms = (
     platforms: { platform: { id: number; name: string; slug: string } }[]
-  ) => platforms.map((p) => p.platform);
+  ) => (platforms ? platforms.map((p) => p.platform) : []);
 
   return (
     <Card>
