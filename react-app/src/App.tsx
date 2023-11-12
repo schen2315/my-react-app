@@ -193,8 +193,12 @@ function App() {
         </HStack>
       </GridItem>
       <GridItem area={"main"}>
-        {gamesLoading && <GameGrid games={[]}></GameGrid>}
-        {!gamesLoading && <GameGrid games={games}></GameGrid>}
+        {gamesLoading && <GameGrid skeleton={true}></GameGrid>}
+        {!gamesLoading && (
+          <GameGrid
+            games={sortBy(filterByGenre(filterByPlatform(games)), sortByFilter)}
+          ></GameGrid>
+        )}
       </GridItem>
     </Grid>
   );

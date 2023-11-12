@@ -5,16 +5,17 @@ import GameCardContainer from "../GameCard/GameCardContainer";
 import GameCard from "../GameCard/GameCard";
 
 interface Props {
-  games: GameInfo[];
+  games?: GameInfo[];
+  skeleton?: boolean;
 }
-function GameGrid({ games }: Props) {
+function GameGrid({ games = [], skeleton = false }: Props) {
   return (
     <SimpleGrid
       spacing={4}
       padding="10px"
       columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
     >
-      {games.length === 0 &&
+      {skeleton &&
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => (
           <GameCardContainer>
             <GameCardSkeleton key={n} />
