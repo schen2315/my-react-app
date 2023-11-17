@@ -22,31 +22,26 @@ import GameCardSkeleton from "./components/Rawg/GameCard/GameCardSkeleton";
 import GameCardContainer from "./components/Rawg/GameCard/GameCardContainer";
 import SidebarSkeleton from "./components/Rawg/Sidebar/SideBarSkeleton";
 import GameGrid from "./components/Rawg/GameGrid/GameGrid";
+import { Search } from "./Logic/Search";
+import { set } from "immer/dist/internal";
+
+interface QueryObject {
+  setGames: React.Dispatch<React.SetStateAction<GameInfo[]>>;
+  setGamesLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setGamesError: React.Dispatch<React.SetStateAction<string>>;
+}
 
 function App() {
   const { games, setGames, gamesLoading, setGamesLoading, setGamesError } =
     useGames();
-
   const { platforms } = usePlatforms();
   const { genres, genresLoading } = useGenres();
   const [genreFilter, setGenreFilter] = useState("");
   const [platformFilter, setPlatformFilter] = useState("");
   const [sortByFilter, setSortByFilter] = useState("");
 
-  const searchGames = (searchInput: string) => {
-    const { request } = rawgClient.getGames(`search=${searchInput}`);
-    setGamesLoading(true);
-    request
-      .then((res) => {
-        setGames(res.data.results);
-        setGamesLoading(false);
-      })
-      .catch((err) => {
-        if (err instanceof CanceledError) return;
-        setGamesError(err.message);
-        setGamesLoading(false);
-      });
-  };
+  // const search = new Search(setGames, setGamesLoading, setGamesError);
+  const search = new Search(setGames, setGamesLoading, setGamesError);
 
   const filterByGenre = (games: GameInfo[]) => {
     if (genreFilter === "") return games;
@@ -154,7 +149,7 @@ function App() {
       }}
     >
       <GridItem area={"nav"}>
-        <Navigation onSubmit={searchGames} />
+        <Navigation onSubmit={search.searchGames} />
       </GridItem>
       <Show above="lg">
         <GridItem area={"aside"} paddingX={5}>
