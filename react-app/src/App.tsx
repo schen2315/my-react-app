@@ -1,47 +1,34 @@
-import {
-  Grid,
-  GridItem,
-  SimpleGrid,
-  Show,
-  HStack,
-  List,
-  Text,
-} from "@chakra-ui/react";
+import { Grid, GridItem, Show, HStack } from "@chakra-ui/react";
 import Navigation from "./components/Rawg/Navigation/Navigation";
 import useGames from "./hooks/Rawg/useGames";
-import rawgClient, { GameInfo, GenreInfo } from "./services/rawg-client";
-import { CanceledError } from "axios";
+import { GameInfo, GenreInfo } from "./services/rawg-client";
 import Sidebar from "./components/Rawg/Sidebar/Sidebar";
 import FilterDropDown from "./components/Rawg/FilterDropDown/FilterDropDown";
 import useGenres from "./hooks/Rawg/useGenres";
 import usePlatforms from "./hooks/Rawg/usePlatforms";
 import { useState } from "react";
-import { number } from "zod";
-import GameCard from "./components/Rawg/GameCard/GameCard";
-import GameCardSkeleton from "./components/Rawg/GameCard/GameCardSkeleton";
-import GameCardContainer from "./components/Rawg/GameCard/GameCardContainer";
 import SidebarSkeleton from "./components/Rawg/Sidebar/SideBarSkeleton";
 import GameGrid from "./components/Rawg/GameGrid/GameGrid";
 import { Search } from "./Logic/Search";
-import { set } from "immer/dist/internal";
-
-interface QueryObject {
-  setGames: React.Dispatch<React.SetStateAction<GameInfo[]>>;
-  setGamesLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setGamesError: React.Dispatch<React.SetStateAction<string>>;
-}
 
 function App() {
   const { games, setGames, gamesLoading, setGamesLoading, setGamesError } =
     useGames();
   const { platforms } = usePlatforms();
-  const { genres, genresLoading } = useGenres();
+  const { genres, genresError, genresLoading } = useGenres();
   const [genreFilter, setGenreFilter] = useState("");
   const [platformFilter, setPlatformFilter] = useState("");
   const [sortByFilter, setSortByFilter] = useState("");
 
-  // const search = new Search(setGames, setGamesLoading, setGamesError);
   const search = new Search(setGames, setGamesLoading, setGamesError);
+  const sortByFilterOptions = [
+    "Date added",
+    "Name",
+    "Release date",
+    "Popularity",
+    "Genre",
+    "Average Rating",
+  ];
 
   const filterByGenre = (games: GameInfo[]) => {
     if (genreFilter === "") return games;
@@ -135,6 +122,9 @@ function App() {
     return sortedGames;
   };
 
+  const allGamesAfterFiltering = (games: GameInfo[]) =>
+    sortBy(filterByGenre(filterByPlatform(games)), sortByFilter);
+
   return (
     <Grid
       templateAreas={{
@@ -156,7 +146,7 @@ function App() {
           {!genresLoading && genres && (
             <Sidebar
               heading={"Genres"}
-              genres={genres}
+              genres={genres} //wrap in gameQuery object
               onClick={setGenreFilter}
               selectedGenre={genreFilter}
             />
@@ -169,20 +159,13 @@ function App() {
           <FilterDropDown
             selected={platformFilter}
             placeholder="Filter By Platform"
-            options={platforms.map((platform) => platform.name)}
-            onSelect={(platform: string) => setPlatformFilter(platform)}
+            options={platforms.map((platform) => platform.name)} //wrap these in query object
+            onSelect={(platform: string) => setPlatformFilter(platform)} //so we can just set the GameQuery object
           ></FilterDropDown>
           <FilterDropDown
             selected={sortByFilter}
             placeholder="Sort By"
-            options={[
-              "Date added",
-              "Name",
-              "Release date",
-              "Popularity",
-              "Genre",
-              "Average Rating",
-            ]}
+            options={sortByFilterOptions}
             onSelect={(sortByOption: string) => setSortByFilter(sortByOption)}
           ></FilterDropDown>
         </HStack>
@@ -190,9 +173,7 @@ function App() {
       <GridItem area={"main"}>
         {gamesLoading && <GameGrid skeleton={true}></GameGrid>}
         {!gamesLoading && (
-          <GameGrid
-            games={sortBy(filterByGenre(filterByPlatform(games)), sortByFilter)}
-          ></GameGrid>
+          <GameGrid games={allGamesAfterFiltering(games)}></GameGrid>
         )}
       </GridItem>
     </Grid>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import rawgClient, { GameInfo } from "../../services/rawg-client";
+import rawgClient from "../../services/rawg-client";
 import { CanceledError } from "axios";
 
 const useData = <T,>(path: string, queryParams: string = "") => {
