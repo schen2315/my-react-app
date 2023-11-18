@@ -12,15 +12,15 @@ import GameGrid from "./components/Rawg/GameGrid/GameGrid";
 import { Search } from "./Logic/Search";
 
 function App() {
-  const { games, setGames, gamesLoading, setGamesLoading, setGamesError } =
-    useGames();
+  const [searchInput, setSearchInput] = useState("");
+  const { games, gamesLoading, gamesError } = useGames(searchInput);
   const { platforms } = usePlatforms();
   const { genres, genresError, genresLoading } = useGenres();
   const [genreFilter, setGenreFilter] = useState("");
   const [platformFilter, setPlatformFilter] = useState("");
   const [sortByFilter, setSortByFilter] = useState("");
 
-  const search = new Search(setGames, setGamesLoading, setGamesError);
+  // const search = new Search(setGames, setGamesLoading, setGamesError);
   const sortByFilterOptions = [
     "Date added",
     "Name",
@@ -139,7 +139,7 @@ function App() {
       }}
     >
       <GridItem area={"nav"}>
-        <Navigation onSubmit={search.searchGames} />
+        <Navigation onSubmit={setSearchInput} />
       </GridItem>
       <Show above="lg">
         <GridItem area={"aside"} paddingX={5}>
@@ -159,7 +159,9 @@ function App() {
           <FilterDropDown
             selected={platformFilter}
             placeholder="Filter By Platform"
-            options={platforms.map((platform) => platform.name)} //wrap these in query object
+            options={
+              platforms ? platforms.map((platform) => platform.name) : []
+            } //wrap these in query object
             onSelect={(platform: string) => setPlatformFilter(platform)} //so we can just set the GameQuery object
           ></FilterDropDown>
           <FilterDropDown

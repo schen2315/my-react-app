@@ -2,25 +2,21 @@ import { useEffect, useState } from "react";
 import rawgClient, { PlatformInfo } from "../../services/rawg-client";
 import { CanceledError } from "axios";
 import useData from "./useData";
+import { useQuery } from "@tanstack/react-query";
 
-const usePlatforms = () => {
+function usePlatforms() {
   const {
     data: platforms,
-    setData: setPlatforms,
-    loading: platformsLoading,
-    setLoading: setPlatformsLoading,
     error: platformsError,
-    setError: setPlatformsError,
-  } = useData<PlatformInfo>("/platforms");
+    isLoading: platformsLoading,
+  } = useQuery<PlatformInfo[], Error>({
+    queryKey: ["platforms"],
+    queryFn: () =>
+      rawgClient.getResults<PlatformInfo>("/platforms/lists/parents"),
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    initialData: [],
+  });
 
-  return {
-    platforms,
-    setPlatforms,
-    platformsLoading,
-    setPlatformsLoading,
-    platformsError,
-    setPlatformsError,
-  };
-};
-
+  return { platforms, platformsError, platformsLoading };
+}
 export default usePlatforms;

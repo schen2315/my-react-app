@@ -41,7 +41,7 @@ class RawgClient {
       },
     });
   }
-  
+
   getGames(queryParam: string) {
     const controller = new AbortController();
     const request = this.client.get<{ results: GameInfo[] }>(
@@ -74,7 +74,6 @@ class RawgClient {
     );
     return { request, cancel: () => controller.abort() };
   }
-  
 
   getData<T>(path: string, queryParams: string = "") {
     const controller = new AbortController();
@@ -82,6 +81,12 @@ class RawgClient {
       signal: controller.signal,
     });
     return { request, cancel: () => controller.abort() };
+  }
+
+  getResults<T>(path: string = "/", queryParams: string = "") {
+    return this.client
+      .get<FetchResults<T>>(`${path}?${queryParams}`)
+      .then((res) => res.data.results);
   }
 }
 
