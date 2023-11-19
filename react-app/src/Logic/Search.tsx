@@ -1,6 +1,7 @@
 import { CanceledError } from "axios";
 import rawgClient, { GameInfo } from "../services/rawg-client";
 
+/*
 
 class Search {
   private setGamesLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,3 +35,5 @@ class Search {
 }
 
 export { Search };
+
+*/

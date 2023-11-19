@@ -1,4 +1,4 @@
-import { GenreInfo } from "../../services/rawg-client";
+import { FetchResults, GenreInfo } from "../../services/rawg-client";
 import rawgClient from "../../services/rawg-client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -7,9 +7,9 @@ function useGenres() {
     data: genres,
     error: genresError,
     isLoading: genresLoading,
-  } = useQuery<GenreInfo[], Error>({
+  } = useQuery<FetchResults<GenreInfo>, Error>({
     queryKey: ["genres"],
-    queryFn: () => rawgClient.getResults<GenreInfo>("/genres"),
+    queryFn: () => rawgClient.get<GenreInfo>("/genres"),
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
   });
 

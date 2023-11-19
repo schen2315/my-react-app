@@ -1,7 +1,13 @@
-import { Grid, GridItem, Show, HStack } from "@chakra-ui/react";
+import {
+  Grid,
+  GridItem,
+  Show,
+  HStack,
+  AlertDialogCloseButton,
+} from "@chakra-ui/react";
 import Navigation from "./components/Rawg/Navigation/Navigation";
 import useGames from "./hooks/Rawg/useGames";
-import { GameInfo, GenreInfo } from "./services/rawg-client";
+import { FetchResults, GameInfo, GenreInfo } from "./services/rawg-client";
 import Sidebar from "./components/Rawg/Sidebar/Sidebar";
 import FilterDropDown from "./components/Rawg/FilterDropDown/FilterDropDown";
 import useGenres from "./hooks/Rawg/useGenres";
@@ -9,18 +15,22 @@ import usePlatforms from "./hooks/Rawg/usePlatforms";
 import { useState } from "react";
 import SidebarSkeleton from "./components/Rawg/Sidebar/SideBarSkeleton";
 import GameGrid from "./components/Rawg/GameGrid/GameGrid";
-import { Search } from "./Logic/Search";
 
 function App() {
   const [searchInput, setSearchInput] = useState("");
-  const { games, gamesLoading, gamesError } = useGames(searchInput);
+  const {
+    games,
+    gamesLoading,
+    gamesError,
+    fetchNextGamesPage,
+    isFetchingNextGamesPage,
+  } = useGames(searchInput);
   const { platforms } = usePlatforms();
   const { genres, genresError, genresLoading } = useGenres();
   const [genreFilter, setGenreFilter] = useState("");
   const [platformFilter, setPlatformFilter] = useState("");
   const [sortByFilter, setSortByFilter] = useState("");
 
-  // const search = new Search(setGames, setGamesLoading, setGamesError);
   const sortByFilterOptions = [
     "Date added",
     "Name",
@@ -125,6 +135,17 @@ function App() {
   const allGamesAfterFiltering = (games: GameInfo[]) =>
     sortBy(filterByGenre(filterByPlatform(games)), sortByFilter);
 
+  const getAllGamesFromPages = (pages: FetchResults<GameInfo>[]) => {
+    const allGames: GameInfo[] = [];
+    pages.forEach((page) => {
+      page.results.forEach((game) => {
+        allGames.push(game);
+      });
+    });
+
+    return allGames;
+  };
+
   return (
     <Grid
       templateAreas={{
@@ -146,7 +167,7 @@ function App() {
           {!genresLoading && genres && (
             <Sidebar
               heading={"Genres"}
-              genres={genres} //wrap in gameQuery object
+              genres={genres.results} //wrap in gameQuery object
               onClick={setGenreFilter}
               selectedGenre={genreFilter}
             />
@@ -160,7 +181,9 @@ function App() {
             selected={platformFilter}
             placeholder="Filter By Platform"
             options={
-              platforms ? platforms.map((platform) => platform.name) : []
+              platforms
+                ? platforms.results.map((platform) => platform.name)
+                : []
             } //wrap these in query object
             onSelect={(platform: string) => setPlatformFilter(platform)} //so we can just set the GameQuery object
           ></FilterDropDown>
@@ -175,7 +198,11 @@ function App() {
       <GridItem area={"main"}>
         {gamesLoading && <GameGrid skeleton={true}></GameGrid>}
         {!gamesLoading && games && (
-          <GameGrid games={allGamesAfterFiltering(games)}></GameGrid>
+          <GameGrid
+            games={allGamesAfterFiltering(getAllGamesFromPages(games.pages))}
+            onLoadMore={fetchNextGamesPage}
+            loadMoreDisabled={isFetchingNextGamesPage}
+          ></GameGrid>
         )}
       </GridItem>
     </Grid>
