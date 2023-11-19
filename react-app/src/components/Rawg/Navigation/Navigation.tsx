@@ -1,25 +1,16 @@
 import {
-  Flex,
-  Box,
   Switch,
   Input,
   Text,
-  Button,
   useColorMode,
-  Heading,
-  Stack,
-  Spacer,
-  Center,
   Image,
   HStack,
   InputGroup,
   InputLeftElement,
-  FormControl,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import { FaReact } from "react-icons/fa";
-// import logo from "../../../assets/logo.webp";
 
 interface Props {
   onSubmit: (searchInput: string) => void;
@@ -37,6 +28,7 @@ function Navigation({ onSubmit }: Props) {
         onSubmit={(event) => {
           event.preventDefault();
           onSubmit(searchInput);
+          if (ref && ref.current) ref.current.value = "";
         }}
       >
         <InputGroup w={[300, 200, 300, 500, 700]}>
@@ -45,17 +37,11 @@ function Navigation({ onSubmit }: Props) {
             placeholder="Search Games"
             borderRadius={20}
             variant={"filled"}
+            ref={ref}
             onChange={(event) => setSearchInput(event.target.value)}
           />
         </InputGroup>
       </form>
-      {/* <Button
-        onClick={() => {
-          onSubmit(searchInput);
-        }}
-      >
-        Submit
-      </Button> */}
       <HStack>
         <Switch
           colorScheme="green"

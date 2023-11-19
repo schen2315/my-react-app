@@ -1,28 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import rawgClient, { GameInfo } from "../../services/rawg-client";
-import useData from "./useData";
-
-/*
-const useGames = () => {
-  const {
-    data: games,
-    setData: setGames,
-    loading: gamesLoading,
-    setLoading: setGamesLoading,
-    error: gamesError,
-    setError: setGamesError,
-  } = useData<GameInfo>("/games");
-
-  return {
-    games,
-    setGames,
-    gamesLoading,
-    setGamesLoading,
-    gamesError,
-    setGamesError,
-  };
-};
-*/
 
 function useGames(searchInput: string = "") {
   const searchParams = searchInput ? `search=${searchInput}` : "";
@@ -33,8 +10,7 @@ function useGames(searchInput: string = "") {
   } = useQuery<GameInfo[], Error>({
     queryKey: ["games", searchInput],
     queryFn: () => rawgClient.getResults<GameInfo>("/games", searchParams),
-    staleTime: 24 * 60 * 60 * 1000, // 24 hours
-    initialData: [],
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   return { games, gamesError, gamesLoading };

@@ -1,7 +1,4 @@
-import { useEffect, useState } from "react";
 import rawgClient, { PlatformInfo } from "../../services/rawg-client";
-import { CanceledError } from "axios";
-import useData from "./useData";
 import { useQuery } from "@tanstack/react-query";
 
 function usePlatforms() {

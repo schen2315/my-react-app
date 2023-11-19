@@ -174,7 +174,7 @@ function App() {
       </GridItem>
       <GridItem area={"main"}>
         {gamesLoading && <GameGrid skeleton={true}></GameGrid>}
-        {!gamesLoading && (
+        {!gamesLoading && games && (
           <GameGrid games={allGamesAfterFiltering(games)}></GameGrid>
         )}
       </GridItem>
