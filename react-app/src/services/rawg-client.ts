@@ -25,7 +25,7 @@ interface GameInfo {
 
 export interface FetchResults<T> {
   results: T[];
-  next: string;
+  next: string | undefined;
 }
 const rawgApiKey = "744bc1c472594240b9ebb5c4fe77ea2b";
 

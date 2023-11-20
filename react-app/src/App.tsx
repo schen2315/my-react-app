@@ -24,6 +24,7 @@ function App() {
     gamesError,
     fetchNextGamesPage,
     isFetchingNextGamesPage,
+    hasNextPage,
   } = useGames(searchInput);
   const { platforms } = usePlatforms();
   const { genres, genresError, genresLoading } = useGenres();
@@ -201,7 +202,7 @@ function App() {
           <GameGrid
             games={allGamesAfterFiltering(getAllGamesFromPages(games.pages))}
             onLoadMore={fetchNextGamesPage}
-            loadMoreDisabled={isFetchingNextGamesPage}
+            loadMoreDisabled={isFetchingNextGamesPage || !hasNextPage}
           ></GameGrid>
         )}
       </GridItem>
