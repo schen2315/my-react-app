@@ -1,24 +1,29 @@
-import { Button, HStack, SimpleGrid } from "@chakra-ui/react";
+import { Button, HStack, SimpleGrid, Spinner } from "@chakra-ui/react";
 import { GameInfo } from "../../../services/rawg-client";
 import GameCardSkeleton from "../GameCard/GameCardSkeleton";
 import GameCardContainer from "../GameCard/GameCardContainer";
 import GameCard from "../GameCard/GameCard";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 interface Props {
   games?: GameInfo[];
   skeleton?: boolean;
-  onLoadMore?: () => void;
-  loadMoreDisabled?: boolean;
+  onLoadMore: () => void;
+  hasMoreGames: boolean;
 }
 function GameGrid({
   games = [],
   skeleton = false,
   onLoadMore,
-  loadMoreDisabled = false,
+  hasMoreGames = false,
 }: Props) {
   return (
-    <>
-      <SimpleGrid
+    <InfiniteScroll
+      dataLength={games.length || 0}
+      hasMore={hasMoreGames}
+      next={onLoadMore}
+      loader={<Spinner />}>
+    <SimpleGrid
         spacing={4}
         padding="10px"
         columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
@@ -36,12 +41,7 @@ function GameGrid({
             </GameCardContainer>
           ))}
       </SimpleGrid>
-      <HStack paddingY={5}>
-        <Button isDisabled={loadMoreDisabled} onClick={onLoadMore}>
-          {loadMoreDisabled ? "Loading" : "Load more"}
-        </Button>
-      </HStack>
-    </>
+      </InfiniteScroll>
   );
 }
 

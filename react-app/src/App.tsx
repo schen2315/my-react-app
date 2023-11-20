@@ -41,6 +41,7 @@ function App() {
     "Average Rating",
   ];
 
+  // TODO: we should ALWAYS use ID not name when referencing genres
   const filterByGenre = (games: GameInfo[]) => {
     if (genreFilter === "") return games;
     const getGenreNames = (genres: GenreInfo[]) =>
@@ -52,6 +53,7 @@ function App() {
     return filteredGames;
   };
 
+  // TODO: we should ALWAYS use ID not name when referencing genres
   const filterByPlatform = (games: GameInfo[]) => {
     if (platformFilter === "") return games;
     const getPlatforms = (
@@ -197,12 +199,12 @@ function App() {
         </HStack>
       </GridItem>
       <GridItem area={"main"}>
-        {gamesLoading && <GameGrid skeleton={true}></GameGrid>}
+        {gamesLoading && <GameGrid skeleton={true} onLoadMore={() => {}} hasMoreGames={false}></GameGrid>}
         {!gamesLoading && games && (
           <GameGrid
             games={allGamesAfterFiltering(getAllGamesFromPages(games.pages))}
             onLoadMore={fetchNextGamesPage}
-            loadMoreDisabled={isFetchingNextGamesPage || !hasNextPage}
+            hasMoreGames={!isFetchingNextGamesPage && !!hasNextPage}
           ></GameGrid>
         )}
       </GridItem>
