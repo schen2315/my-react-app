@@ -5,13 +5,13 @@ import {
   HStack
 } from "@chakra-ui/react";
 import Navigation from "./components/Rawg/Navigation/Navigation";
-import { FetchResults, GameInfo, PlatformInfo } from "./services/rawg-client";
+import { PlatformInfo } from "./services/rawg-client";
 import Sidebar from "./components/Rawg/Sidebar/Sidebar";
 import FilterDropDown from "./components/Rawg/FilterDropDown/FilterDropDown";
 import SidebarSkeleton from "./components/Rawg/Sidebar/SideBarSkeleton";
 import GameGrid from "./components/Rawg/GameGrid/GameGrid";
 import filterByGenre, { filterByPlatform, sortBy } from "./Logic/Filter";
-import useGameQuery, { GameQuery, getAllGamesFromPages } from "./hooks/Rawg/useGameQuery";
+import useGameQuery, { GameQuery } from "./hooks/Rawg/useGameQuery";
 
 function App() {
 
