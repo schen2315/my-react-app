@@ -18,14 +18,14 @@ function useGames(searchInput: string = "") {
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     keepPreviousData: true,
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (lastPage: FetchResults<GameInfo>, allPages: FetchResults<GameInfo>[]) => {
       const regex = /page=[0-9]+/g;
       console.log(lastPage);
       if (lastPage.next && lastPage.next.match(regex)!.length > 0) {
         return lastPage.next.match(regex)![0];
       }
       return undefined;
-    },
+    }
   });
 
   return {
