@@ -25,6 +25,7 @@ interface GameInfo {
 
 export interface FetchResults<T> {
   results: T[];
+  next: string | null;
 }
 const rawgApiKey = "744bc1c472594240b9ebb5c4fe77ea2b";
 
@@ -42,51 +43,10 @@ class RawgClient {
     });
   }
 
-  getGames(queryParam: string) {
-    const controller = new AbortController();
-    const request = this.client.get<{ results: GameInfo[] }>(
-      `/games?${queryParam}`,
-      {
-        signal: controller.signal,
-      }
-    );
-    return { request, cancel: () => controller.abort() };
-  }
-
-  getGenres(queryParam: string) {
-    const controller = new AbortController();
-    const request = this.client.get<{ results: GenreInfo[] }>(
-      `/genres?${queryParam}`,
-      {
-        signal: controller.signal,
-      }
-    );
-    return { request, cancel: () => controller.abort() };
-  }
-
-  getPlatforms(queryParam: string) {
-    const controller = new AbortController();
-    const request = this.client.get<{ results: PlatformInfo[] }>(
-      `/platforms?${queryParam}`,
-      {
-        signal: controller.signal,
-      }
-    );
-    return { request, cancel: () => controller.abort() };
-  }
-
-  getData<T>(path: string, queryParams: string = "") {
-    const controller = new AbortController();
-    const request = this.client.get<FetchResults<T>>(`${path}?${queryParams}`, {
-      signal: controller.signal,
-    });
-    return { request, cancel: () => controller.abort() };
-  }
-
-  getResults<T>(path: string = "/", queryParams: string = "") {
+  get<T>(path: string = "/", queryParams: string = "") {
     return this.client
       .get<FetchResults<T>>(`${path}?${queryParams}`)
-      .then((res) => res.data.results);
+      .then((res) => res.data);
   }
 }
 
