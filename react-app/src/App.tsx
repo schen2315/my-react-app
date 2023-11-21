@@ -16,6 +16,7 @@ import { useState } from "react";
 import SidebarSkeleton from "./components/Rawg/Sidebar/SideBarSkeleton";
 import GameGrid from "./components/Rawg/GameGrid/GameGrid";
 import filterByGenre, { filterByPlatform, sortBy } from "./Logic/Filter";
+import useGameQuery, { GameQuery } from "./hooks/Rawg/useGameQuery";
 
 function App() {
   const [searchInput, setSearchInput] = useState("");
@@ -29,21 +30,10 @@ function App() {
   } = useGames(searchInput);
   const { platforms } = usePlatforms();
   const { genres, genresError, genresLoading } = useGenres();
-  const [genreFilter, setGenreFilter] = useState("");
-  const [platformFilter, setPlatformFilter] = useState("");
-  const [sortByFilter, setSortByFilter] = useState("");
 
-  const sortByFilterOptions = [
-    "Date added",
-    "Name",
-    "Release date",
-    "Popularity",
-    "Genre",
-    "Average Rating",
-  ];
-
+  const gameQuery: GameQuery = useGameQuery();
   const allGamesAfterFiltering = (games: GameInfo[]) =>
-    sortBy(filterByGenre(filterByPlatform(games, platforms?.results, platformFilter), genreFilter), sortByFilter);
+    sortBy(filterByGenre(filterByPlatform(games, platforms?.results, gameQuery.filter.platformFilter), gameQuery.filter.genreFilter), gameQuery.filter.sortByFilter);
 
   const getAllGamesFromPages = (pages: FetchResults<GameInfo>[]) => {
     const allGames: GameInfo[] = [];
@@ -78,8 +68,8 @@ function App() {
             <Sidebar
               heading={"Genres"}
               genres={genres.results} //wrap in gameQuery object
-              onClick={setGenreFilter}
-              selectedGenre={genreFilter}
+              onClick={gameQuery.filter.setGenreFilter}
+              selectedGenre={gameQuery.filter.genreFilter}
             />
           )}
           {genresLoading && <SidebarSkeleton heading={"Genres"} />}
@@ -88,20 +78,20 @@ function App() {
       <GridItem area={"filter"} width={"500px"}>
         <HStack>
           <FilterDropDown
-            selected={platformFilter}
+            selected={gameQuery.filter.platformFilter}
             placeholder="Filter By Platform"
             options={
               platforms
                 ? platforms.results.map((platform: PlatformInfo) => platform.name)
                 : []
             } //wrap these in query object
-            onSelect={(platform: string) => setPlatformFilter(platform)} //so we can just set the GameQuery object
+            onSelect={(platform: string) => gameQuery.filter.setPlatformFilter(platform)} //so we can just set the GameQuery object
           ></FilterDropDown>
           <FilterDropDown
-            selected={sortByFilter}
+            selected={gameQuery.filter.sortByFilter}
             placeholder="Sort By"
-            options={sortByFilterOptions}
-            onSelect={(sortByOption: string) => setSortByFilter(sortByOption)}
+            options={gameQuery.filter.sortByFilterOptions}
+            onSelect={(sortByOption: string) => gameQuery.filter.setSortByFilter(sortByOption)}
           ></FilterDropDown>
         </HStack>
       </GridItem>
