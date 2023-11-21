@@ -2,49 +2,24 @@ import {
   Grid,
   GridItem,
   Show,
-  HStack,
-  AlertDialogCloseButton,
+  HStack
 } from "@chakra-ui/react";
 import Navigation from "./components/Rawg/Navigation/Navigation";
-import useGames from "./hooks/Rawg/useGames";
-import { FetchResults, GameInfo, GenreInfo, PlatformInfo } from "./services/rawg-client";
+import { FetchResults, GameInfo, PlatformInfo } from "./services/rawg-client";
 import Sidebar from "./components/Rawg/Sidebar/Sidebar";
 import FilterDropDown from "./components/Rawg/FilterDropDown/FilterDropDown";
-import useGenres from "./hooks/Rawg/useGenres";
-import usePlatforms from "./hooks/Rawg/usePlatforms";
-import { useState } from "react";
 import SidebarSkeleton from "./components/Rawg/Sidebar/SideBarSkeleton";
 import GameGrid from "./components/Rawg/GameGrid/GameGrid";
 import filterByGenre, { filterByPlatform, sortBy } from "./Logic/Filter";
-import useGameQuery, { GameQuery } from "./hooks/Rawg/useGameQuery";
+import useGameQuery, { GameQuery, getAllGamesFromPages } from "./hooks/Rawg/useGameQuery";
 
 function App() {
-  const [searchInput, setSearchInput] = useState("");
-  const {
-    games,
-    gamesLoading,
-    gamesError,
-    fetchNextGamesPage,
-    isFetchingNextGamesPage,
-    hasNextPage,
-  } = useGames(searchInput);
-  const { platforms } = usePlatforms();
-  const { genres, genresError, genresLoading } = useGenres();
 
   const gameQuery: GameQuery = useGameQuery();
-  const allGamesAfterFiltering = (games: GameInfo[]) =>
-    sortBy(filterByGenre(filterByPlatform(games, platforms?.results, gameQuery.filter.platformFilter), gameQuery.filter.genreFilter), gameQuery.filter.sortByFilter);
-
-  const getAllGamesFromPages = (pages: FetchResults<GameInfo>[]) => {
-    const allGames: GameInfo[] = [];
-    pages.forEach((page) => {
-      page.results.forEach((game) => {
-        allGames.push(game);
-      });
-    });
-
-    return allGames;
-  };
+  const allGamesAfterFiltering = (gameQuery: GameQuery) => {
+    const games = gameQuery.game.getAllGames()
+    return sortBy(filterByGenre(filterByPlatform(games, gameQuery.platform.platforms?.results, gameQuery.filter.platformFilter), gameQuery.filter.genreFilter), gameQuery.filter.sortByFilter);
+  }
 
   return (
     <Grid
@@ -60,19 +35,19 @@ function App() {
       }}
     >
       <GridItem area={"nav"}>
-        <Navigation onSubmit={setSearchInput} />
+        <Navigation onSubmit={gameQuery.search.setSearchInput} />
       </GridItem>
       <Show above="lg">
         <GridItem area={"aside"} paddingX={5}>
-          {!genresLoading && genres && (
+          {!gameQuery.genre.genresLoading && gameQuery.genre.genres && (
             <Sidebar
               heading={"Genres"}
-              genres={genres.results} //wrap in gameQuery object
+              genres={gameQuery.genre.genres.results} //wrap in gameQuery object
               onClick={gameQuery.filter.setGenreFilter}
               selectedGenre={gameQuery.filter.genreFilter}
             />
           )}
-          {genresLoading && <SidebarSkeleton heading={"Genres"} />}
+          {gameQuery.genre.genresLoading && <SidebarSkeleton heading={"Genres"} />}
         </GridItem>
       </Show>
       <GridItem area={"filter"} width={"500px"}>
@@ -81,11 +56,11 @@ function App() {
             selected={gameQuery.filter.platformFilter}
             placeholder="Filter By Platform"
             options={
-              platforms
-                ? platforms.results.map((platform: PlatformInfo) => platform.name)
+              gameQuery.platform.platforms
+                ? gameQuery.platform.platforms.results.map((platform: PlatformInfo) => platform.name)
                 : []
             } //wrap these in query object
-            onSelect={(platform: string) => gameQuery.filter.setPlatformFilter(platform)} //so we can just set the GameQuery object
+            onSelect={(platform: string) => gameQuery.filter.setPlatformFilter(platform)}
           ></FilterDropDown>
           <FilterDropDown
             selected={gameQuery.filter.sortByFilter}
@@ -96,12 +71,12 @@ function App() {
         </HStack>
       </GridItem>
       <GridItem area={"main"}>
-        {gamesLoading && <GameGrid skeleton={true} onLoadMore={() => {}} hasMoreGames={false}></GameGrid>}
-        {!gamesLoading && games && (
+        {gameQuery.game.gamesLoading && <GameGrid skeleton={true} onLoadMore={() => {}} hasMoreGames={false}></GameGrid>}
+        {!gameQuery.game.gamesLoading && gameQuery.game.getAllGames && (
           <GameGrid
-            games={allGamesAfterFiltering(getAllGamesFromPages(games.pages))}
-            onLoadMore={fetchNextGamesPage}
-            hasMoreGames={!isFetchingNextGamesPage && !!hasNextPage}
+            games={allGamesAfterFiltering(gameQuery)}
+            onLoadMore={gameQuery.game.fetchNextGamesPage}
+            hasMoreGames={!gameQuery.game.isFetchingNextGamesPage && !!gameQuery.game.hasNextPage}
           ></GameGrid>
         )}
       </GridItem>

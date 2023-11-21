@@ -15,6 +15,8 @@ const filterByGenre = (games: GameInfo[], genreFilter: string) => {
 };
 
 export const filterByPlatform = (games: GameInfo[], platforms: PlatformInfo[] | undefined, platformFilter: string) => {
+
+  /*
   if (!platforms || platformFilter === "") return games;
   const getPlatforms = (
     platforms: { platform: { id: number; name: string } }[]
@@ -32,6 +34,8 @@ export const filterByPlatform = (games: GameInfo[], platforms: PlatformInfo[] | 
   console.log(filtered);
 
   return filtered;
+  */
+  return games;
 };
 
 export const sortBy = (games: GameInfo[], sortByValue: string) => {
