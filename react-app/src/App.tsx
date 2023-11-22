@@ -10,16 +10,12 @@ import Sidebar from "./components/Rawg/Sidebar/Sidebar";
 import FilterDropDown from "./components/Rawg/FilterDropDown/FilterDropDown";
 import SidebarSkeleton from "./components/Rawg/Sidebar/SideBarSkeleton";
 import GameGrid from "./components/Rawg/GameGrid/GameGrid";
-import filterByGenre, { filterByPlatform, sortBy } from "./Logic/Filter";
+import filterByGenre, { filterByPlatform, sortBy, allGamesAfterFiltering } from "./Logic/Filter";
 import useGameQuery, { GameQuery } from "./hooks/Rawg/useGameQuery";
 
 function App() {
 
   const gameQuery: GameQuery = useGameQuery();
-  const allGamesAfterFiltering = (gameQuery: GameQuery) => {
-    const games = gameQuery.game.getAllGames()
-    return sortBy(filterByGenre(filterByPlatform(games, gameQuery.platform.platforms?.results, gameQuery.filter.platformFilter), gameQuery.filter.genreFilter), gameQuery.filter.sortByFilter);
-  }
 
   return (
     <Grid
