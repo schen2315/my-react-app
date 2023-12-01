@@ -14,6 +14,7 @@ interface PlatformInfo {
 
 interface GameInfo {
   id: number;
+  slug: string;
   name: string;
   genres: GenreInfo[];
   rating: number;
@@ -21,6 +22,13 @@ interface GameInfo {
   released: string;
   metacritic: number;
   platforms: { platform: { id: number; name: string; slug: string } }[]; //platform here does NOT refer to PlatformInfo type
+}
+
+export interface GameDescriptionInfo {
+  id: number;
+  slug: string;
+  name: string;
+  description_raw: string;
 }
 
 export interface FetchResults<T> {
@@ -43,9 +51,15 @@ class RawgClient {
     });
   }
 
-  get<T>(path: string = "/", queryParams: string = "") {
+  getResults<T>(path: string = "/", queryParams: string = "") {
     return this.client
       .get<FetchResults<T>>(`${path}?${queryParams}`)
+      .then((res) => res.data);
+  }
+
+  get<T>(path: string = "/", queryParams: string = "") {
+    return this.client
+      .get<T>(`${path}?${queryParams}`)
       .then((res) => res.data);
   }
 }

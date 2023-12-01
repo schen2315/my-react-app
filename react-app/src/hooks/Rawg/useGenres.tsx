@@ -9,7 +9,7 @@ function useGenres() {
     isLoading: genresLoading,
   } = useQuery<FetchResults<GenreInfo>, Error>({
     queryKey: ["genres"],
-    queryFn: () => rawgClient.get<GenreInfo>("/genres"),
+    queryFn: () => rawgClient.getResults<GenreInfo>("/genres"),
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
   });
 

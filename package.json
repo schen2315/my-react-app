@@ -3,6 +3,7 @@
     "@chakra-ui/icons": "^2.1.1",
     "@tanstack/react-query": "4.28",
     "@tanstack/react-query-devtools": "4.28",
-    "openai": "^4.17.4"
+    "openai": "^4.17.4",
+    "react-router-dom": "^6.10.0"
   }
 }

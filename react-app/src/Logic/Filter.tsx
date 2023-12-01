@@ -18,17 +18,6 @@ const filterByGenre = (games: GameInfo[], genreFilter: string) => {
   return filteredGames;
 };
 
-const filterByGenreId = (games: GameInfo[], genreFilterId: number) => {
-  if (genreFilterId === -1) return games;
-  const getGenreIds = (genres: GenreInfo[]) =>
-    genres.map((genre: GenreInfo) => genre.id);
-
-  const filteredGames = games.filter((game: GameInfo) =>
-    getGenreIds(game.genres).includes(genreFilterId)
-  );
-  return filteredGames;
-};
-
 export const filterByPlatform = (
   games: GameInfo[],
   platforms: PlatformInfo[] | undefined,
@@ -115,16 +104,17 @@ export const sortBy = (games: GameInfo[], sortByValue: string) => {
   return sortedGames;
 };
 
-export const allGamesAfterFiltering = (gameQuery: GameQuery) => {
+export const allGamesAfterFiltering = (gameQuery: GameQuery, genreFilter: string, platformFilter: string) => {
   const games = gameQuery.game.getAllGames();
   return sortBy(
     filterByGenre(
       filterByPlatform(
         games,
         gameQuery.platform.platforms?.results,
-        gameQuery.filter.platformFilter
+        platformFilter
       ),
-      gameQuery.filter.genreFilter
+      // gameQuery.filter.genreFilter
+      genreFilter
     ),
     gameQuery.filter.sortByFilter
   );

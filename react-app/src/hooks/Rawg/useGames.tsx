@@ -14,7 +14,7 @@ function useGames(searchInput: string = "") {
     queryKey: ["games", searchInput],
     queryFn: ({ pageParam = "" }) => {
       console.log(searchParams + "&" + pageParam);
-      return rawgClient.get<GameInfo>("/games", pageParam + "&" + searchParams);
+      return rawgClient.getResults<GameInfo>("/games", pageParam + "&" + searchParams);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     keepPreviousData: true,

@@ -25,7 +25,7 @@ function GameGrid({
       loader={<Spinner />}>
       <SimpleGrid
           spacing={4}
-          padding="10px"
+          padding="20px"
           columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
         >
           {skeleton &&

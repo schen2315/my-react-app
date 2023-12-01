@@ -1,24 +1,27 @@
 import {
-  Switch,
-  Input,
-  Text,
-  useColorMode,
-  Image,
   HStack,
+  Image,
+  Input,
   InputGroup,
   InputLeftElement,
+  Switch,
+  Text,
+  useColorMode,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { BsSearch } from "react-icons/bs";
 import { FaReact } from "react-icons/fa";
+import { useSearchInputStore } from "../../../hooks/Rawg/useGameQuery";
 
-interface Props {
-  onSubmit: (searchInput: string) => void;
-}
+// interface Props {
+//   onSubmit: (searchInput: string) => void;
+// }
 
-function Navigation({ onSubmit }: Props) {
+function Navigation() {
   const { colorMode, toggleColorMode } = useColorMode();
-  const [searchInput, setSearchInput] = useState("");
+  // const [searchInput, setSearchInput] = useState("");
+
+  const { setValue: setSearchInput } = useSearchInputStore();
   const ref = useRef<HTMLInputElement>(null);
 
   return (
@@ -27,7 +30,7 @@ function Navigation({ onSubmit }: Props) {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          onSubmit(searchInput);
+          setSearchInput(ref.current?.value || "");
           if (ref && ref.current) ref.current.value = "";
         }}
       >
@@ -38,7 +41,6 @@ function Navigation({ onSubmit }: Props) {
             borderRadius={20}
             variant={"filled"}
             ref={ref}
-            onChange={(event) => setSearchInput(event.target.value)}
           />
         </InputGroup>
       </form>
