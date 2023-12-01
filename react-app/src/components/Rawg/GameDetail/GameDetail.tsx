@@ -1,7 +1,17 @@
-import { Box, Button, Heading, Spinner, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Grid,
+  GridItem,
+  Heading,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import useGamesDescription from "../../../hooks/Rawg/useGamesDescription";
+import GameDataItem from "./GameDataItem";
+import GameData from "./GameData";
 
 const GameDetail = () => {
   const params = useParams<{ slug: string }>();
@@ -27,12 +37,13 @@ const GameDetail = () => {
     </Button>
   );
   return (
+    <>
     <Box padding={5}>
       <Heading>{data?.name}</Heading>
       <Text fontSize={"16px"}>
         {!toggle ? (
           <>
-            { data?.description_raw.slice(0, 300)}
+            {data?.description_raw.slice(0, 300)}
             {"... "}
             {ShowMore}
           </>
@@ -43,6 +54,8 @@ const GameDetail = () => {
         )}
       </Text>
     </Box>
+    <GameData />
+    </>
   );
 };
 
