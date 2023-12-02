@@ -5,16 +5,13 @@ import useGamesDescription from '../../../hooks/Rawg/useGamesDescription';
 
 interface Props {
   heading: string
+  children?: React.ReactNode
 }
-const GameDataItem = ({ heading }: Props) => {
-  const params = useParams<{ slug: string }>();
-  const { data, error, isLoading } = useGamesDescription(params.slug!);
-
-  if (!data || isLoading) return <Spinner />
-  console.log(data);
+const GameDataItem = ({ heading, children }: Props) => {
   return (
     <>
       <Heading fontSize="16px">{heading}</Heading>
+      {children}
     </>
   )
 }

@@ -2,14 +2,23 @@ import axios, { AxiosInstance, CanceledError } from "axios";
 
 interface GenreInfo {
   id: number;
+  slug: string;
   name: string;
   image_background: string;
 }
 
 interface PlatformInfo {
   id: number;
+  slug: string;
   name: string;
   games_count: number;
+}
+
+interface PublishersInfo {
+  id: number;
+  slug: string;
+  games_count: number;
+  name: string;
 }
 
 interface GameInfo {
@@ -21,7 +30,7 @@ interface GameInfo {
   background_image: string;
   released: string;
   metacritic: number;
-  platforms: { platform: { id: number; name: string; slug: string } }[]; //platform here does NOT refer to PlatformInfo type
+  platforms: { platform: PlatformInfo }[]; //platform here does NOT refer to PlatformInfo type
 }
 
 export interface GameDescriptionInfo {
@@ -29,11 +38,29 @@ export interface GameDescriptionInfo {
   slug: string;
   name: string;
   description_raw: string;
+  platforms: { platform: PlatformInfo }[];
+  genres: GenreInfo[];
+  publishers: PublishersInfo[];
+  metacritic: number;
+}
+
+export interface GameTrailer {
+  id: number;
+  name: string;
+  preview: string;
+  data: { "480": string, max: string };
+}
+
+export interface GameScreenshot {
+  image: string;
+  hidden: boolean;
 }
 
 export interface FetchResults<T> {
   results: T[];
   next: string | null;
+  previous: string | null;
+  count: number;
 }
 const rawgApiKey = "744bc1c472594240b9ebb5c4fe77ea2b";
 
