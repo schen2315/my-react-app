@@ -1,6 +1,10 @@
 import { CanceledError } from "axios";
-import rawgClient, { GameInfo, GenreInfo, PlatformInfo } from "../services/rawg-client";
-
+import rawgClient, {
+  GameInfo,
+  GenreInfo,
+  PlatformInfo,
+} from "../services/rawg-client";
+import { GameQuery } from "../hooks/Rawg/useGameQuery";
 
 // TODO: we should ALWAYS use ID not name when referencing genres
 const filterByGenre = (games: GameInfo[], genreFilter: string) => {
@@ -14,7 +18,12 @@ const filterByGenre = (games: GameInfo[], genreFilter: string) => {
   return filteredGames;
 };
 
-export const filterByPlatform = (games: GameInfo[], platforms: PlatformInfo[] | undefined, platformFilter: string) => {
+export const filterByPlatform = (
+  games: GameInfo[],
+  platforms: PlatformInfo[] | undefined,
+  platformFilter: string
+) => {
+  /*
   if (!platforms || platformFilter === "") return games;
   const getPlatforms = (
     platforms: { platform: { id: number; name: string } }[]
@@ -32,6 +41,8 @@ export const filterByPlatform = (games: GameInfo[], platforms: PlatformInfo[] | 
   console.log(filtered);
 
   return filtered;
+  */
+  return games;
 };
 
 export const sortBy = (games: GameInfo[], sortByValue: string) => {
@@ -87,12 +98,26 @@ export const sortBy = (games: GameInfo[], sortByValue: string) => {
   };
 
   const sortedGames =
-    sortByValue in sortByValues
-      ? games.sort(sortByValues[sortByValue])
-      : games;
+    sortByValue in sortByValues ? games.sort(sortByValues[sortByValue]) : games;
 
   if (sortByValue === "Popularity") sortedGames.reverse();
   return sortedGames;
+};
+
+export const allGamesAfterFiltering = (gameQuery: GameQuery, genreFilter: string, platformFilter: string) => {
+  const games = gameQuery.game.getAllGames();
+  return sortBy(
+    filterByGenre(
+      filterByPlatform(
+        games,
+        gameQuery.platform.platforms?.results,
+        platformFilter
+      ),
+      // gameQuery.filter.genreFilter
+      genreFilter
+    ),
+    gameQuery.filter.sortByFilter
+  );
 };
 
 export default filterByGenre;

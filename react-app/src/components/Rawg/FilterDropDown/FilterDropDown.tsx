@@ -7,6 +7,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { BsChevronDown } from "react-icons/bs";
+import { usePlatformFilterStore } from "../../../hooks/Rawg/useGameQuery";
 
 interface Props {
   options: string[];
@@ -20,10 +21,12 @@ function FilterDropDown({
   placeholder,
   selected = null,
 }: Props) {
+  // const { value, setValue } = usePlatformFilterStore();
   return (
     <Menu isLazy>
       <MenuButton as={Button} rightIcon={<BsChevronDown />}>
         {selected ? selected : placeholder}
+        {/* {value ? value : placeholder} */}
       </MenuButton>
       <MenuList>
         {options &&

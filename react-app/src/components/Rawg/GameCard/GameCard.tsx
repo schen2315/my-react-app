@@ -15,6 +15,7 @@ import {
 import PlatformsList from "./PlatformsList";
 import GameCriticScore from "./GameCriticScore";
 import getCroppedImageUrl from "../../../services/image";
+import { Link, NavLink } from "react-router-dom";
 
 interface Props {
   game?: GameInfo;
@@ -36,7 +37,10 @@ function GameCard({ game }: Props) {
       <CardHeader>
         {game && (
           <>
-            <Heading fontSize={20}>{game.name}</Heading>
+            {/* <Heading fontSize={20}>{game.name}</Heading> */}
+            <Heading fontSize={20}>
+              <Link to={`/games/${game.slug}`}>{game.name}</Link>
+            </Heading>
             <HStack marginY={1} justifyContent={"space-between"}>
               <PlatformsList platforms={getPlatforms(game.platforms)} />
               <GameCriticScore score={game.metacritic} />
