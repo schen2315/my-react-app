@@ -11,7 +11,7 @@ function usePlatforms() {
     isLoading: platformsLoading,
   } = useQuery<FetchResults<PlatformInfo>, Error>({
     queryKey: ["platforms"],
-    queryFn: () => rawgClient.get<PlatformInfo>("/platforms/lists/parents"),
+    queryFn: () => rawgClient.getResults<PlatformInfo>("/platforms/lists/parents"),
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
   });
 

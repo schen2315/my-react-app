@@ -4,6 +4,7 @@ import {
   Grid,
   GridItem,
   Heading,
+  SimpleGrid,
   Spinner,
   Text,
 } from "@chakra-ui/react";
@@ -21,11 +22,11 @@ const GameDetail = () => {
 
   const { data, error, isLoading } = useGamesDescription(params.slug!);
   const { trailer, trailerError, trailerLoading } = useGameTrailers(data?.id!);
-  console.log(trailer?.results)
+  console.log(trailer?.results);
   const [toggle, setToggle] = useState(false);
-  if (isLoading) return <Spinner />;
+  // if (isLoading) return <Spinner />;
 
-  if (error) throw error;
+  // if (error) throw error;
 
   const ShowMore = (
     <Button
@@ -41,27 +42,38 @@ const GameDetail = () => {
     </Button>
   );
   return (
-    <>
-    {trailer && trailer.results.length > 0 && <iframe title={trailer.results[0].name} src={trailer.results[0].data["480"]} allowFullScreen/>}
-    <Box padding={5}>
-      <Heading>{data?.name}</Heading>
-      <Text fontSize={"16px"}>
-        {!toggle ? (
-          <>
-            {data?.description_raw.slice(0, 300)}
-            {"... "}
-            {ShowMore}
-          </>
-        ) : (
-          <>
-            {data?.description_raw} {ShowMore}
-          </>
+    <SimpleGrid columns={{ sm: 1, md: 2}}>
+      <GridItem>
+        <Box padding={5}>
+          <Heading>{data?.name}</Heading>
+          <Text fontSize={"16px"}>
+            {!toggle ? (
+              <>
+                {data?.description_raw.slice(0, 300)}
+                {"... "}
+                {ShowMore}
+              </>
+            ) : (
+              <>
+                {data?.description_raw} {ShowMore}
+              </>
+            )}
+          </Text>
+        </Box>
+        <GameData />
+      </GridItem>
+      <GridItem margin={5}>
+        {trailer && trailer.results.length > 0 && (
+          <video
+            controls
+            // title={trailer.results[0].name}
+            
+            // allowFullScreen
+          ><source src={trailer.results[0].data["480"]} /></video>
         )}
-      </Text>
-    </Box>
-    <GameData />
-    <GameScreenshots />
-    </>
+        <GameScreenshots />
+      </GridItem>
+    </SimpleGrid>
   );
 };
 

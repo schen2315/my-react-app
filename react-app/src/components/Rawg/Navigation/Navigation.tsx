@@ -12,6 +12,7 @@ import { useRef } from "react";
 import { BsSearch } from "react-icons/bs";
 import { FaReact } from "react-icons/fa";
 import { useSearchInputStore } from "../../../hooks/Rawg/useGameQuery";
+import { Link, useNavigate } from "react-router-dom";
 
 // interface Props {
 //   onSubmit: (searchInput: string) => void;
@@ -23,15 +24,19 @@ function Navigation() {
 
   const { setValue: setSearchInput } = useSearchInputStore();
   const ref = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   return (
     <HStack justifyContent={"space-between"} padding="10px">
-      <Image as={FaReact} boxSize="60px" />
+      <Link to="/">
+        <Image as={FaReact} boxSize="60px" />
+      </Link>
       <form
         onSubmit={(event) => {
           event.preventDefault();
           setSearchInput(ref.current?.value || "");
           if (ref && ref.current) ref.current.value = "";
+          navigate("/")
         }}
       >
         <InputGroup w={[300, 200, 300, 500, 700]}>
